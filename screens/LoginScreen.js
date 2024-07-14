@@ -1,18 +1,52 @@
 import {
+  Alert,
   KeyboardAvoidingView,
   Pressable,
   StyleSheet,
   Text,
   View,
 } from "react-native";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Input from "../components/Register/Input";
 import Button from "../components/UI/Button";
+import axios from "axios";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const LoginScreen = ({ navigation }) => {
+  useEffect(() => {
+    async function checkToken() {
+      const token = await AsyncStorage.getItem("authToken");
+      if (token) {
+        navigation.replace("HomeScreen");
+      }
+    }
+    checkToken();
+  }, []);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
+  function loginHandler() {
+    const user = {
+      email: email,
+      password: password,
+    };
+    axios
+      .post("http://192.168.1.2:8000/login", user)
+      .then((response) => {
+        const token = response.data.token;
+
+        //Storing token to device
+        AsyncStorage.setItem("authToken", token).then(() =>
+          navigation.replace("HomeScreen")
+        );
+
+        //Navigating to Home Screen
+      })
+      .catch((e) => {
+        console.log(e);
+        Alert.alert("Login error", "Invalid Email or Password");
+      });
+  }
   return (
     <View
       style={{
@@ -63,7 +97,7 @@ const LoginScreen = ({ navigation }) => {
             value={password}
             isSecure={true}
           />
-          <Button>Login</Button>
+          <Button onPress={loginHandler}>Login</Button>
 
           <View
             style={{

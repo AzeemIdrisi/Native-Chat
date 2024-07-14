@@ -28,7 +28,7 @@ const RegisterScreen = ({ navigation }) => {
 
     // Sending POST Request to Register a new user
     axios
-      .post("http://192.168.1.10:8000/register", user)
+      .post("http://192.168.1.2:8000/register", user)
       .then((response) => {
         console.log(response);
         Alert.alert(

@@ -1,12 +1,15 @@
 import { StatusBar } from "expo-status-bar";
 import { StyleSheet, Text, View } from "react-native";
-import StackNavigator from "./StackNavigator";
+import StackNavigator from "./navigators/StackNavigator";
+import UserContextProvider from "./store/UserContext";
 
 export default function App() {
   return (
     <>
-      <StatusBar style="auto" />
-      <StackNavigator />
+      <StatusBar style="" />
+      <UserContextProvider>
+        <StackNavigator />
+      </UserContextProvider>
     </>
   );
 }
