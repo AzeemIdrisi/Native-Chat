@@ -1,17 +1,33 @@
 import React, { useContext, useEffect, useLayoutEffect, useState } from "react";
-import { ScrollView, Text, View } from "react-native";
+import { Alert, ScrollView, Text, View } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from "axios"; // Don't forget to import axios
 import { UserContext } from "../store/UserContext";
 import { jwtDecode } from "jwt-decode";
-import User from "../api/models/user";
+import { MaterialIcons } from "@expo/vector-icons";
 import UserItem from "../components/Messages/UserItem";
 
 const HomeScreen = ({ navigation }) => {
   const { userID, setUserId } = useContext(UserContext);
   const [users, setUsers] = useState([]);
 
+  function handleLogout() {
+    Alert.alert("Logout", "Are you sure you want to logout?", [
+      {
+        text: "Cancel",
+        style: "cancel",
+      },
+      {
+        text: "Log out",
+        onPress: async () => {
+          setUserId(null);
+          await AsyncStorage.removeItem("authToken");
+          navigation.navigate("LoginScreen");
+        },
+      },
+    ]);
+  }
   useLayoutEffect(() => {
     navigation.setOptions({
       headerTitle: "",
@@ -20,6 +36,12 @@ const HomeScreen = ({ navigation }) => {
       ),
       headerRight: () => (
         <View style={{ flexDirection: "row", alignItems: "center", gap: 20 }}>
+          <MaterialIcons
+            name="account-circle"
+            size={24}
+            color="black"
+            onPress={handleLogout}
+          />
           <Ionicons
             name="chatbox-ellipses-outline"
             size={24}
@@ -65,6 +87,9 @@ const HomeScreen = ({ navigation }) => {
   return (
     <View>
       <ScrollView style={{ padding: 10 }}>
+        <Text style={{ padding: 10, fontWeight: "bold", color: "gray" }}>
+          People using Native Chat
+        </Text>
         {users.map((item, index) => (
           <UserItem key={index} item={item} />
         ))}

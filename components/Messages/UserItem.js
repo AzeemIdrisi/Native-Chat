@@ -23,7 +23,7 @@ const UserItem = ({ item }) => {
       }
     }
     fetchUserFriends();
-  }, []);
+  }, [item, friendRequests, requestSent, userFriends]);
 
   useEffect(() => {
     async function fetchFriendRequests() {

@@ -18,8 +18,6 @@ const ChatUser = ({ item }) => {
 
         if (response.data.success) {
           setConversation(response.data.messages);
-          const last = getLastMessage();
-          setLastMessage(last);
         }
       } catch (error) {
         console.log(error);
@@ -28,12 +26,17 @@ const ChatUser = ({ item }) => {
     fetchMessages();
   }, [lastMessage, item]);
 
-  function getLastMessage() {
-    const userMessages = conversation.filter(
-      (msg) => msg.messageType === "text"
-    );
-    return userMessages[userMessages.length - 1];
-  }
+  useEffect(() => {
+    function getLastMessage() {
+      const userMessages = conversation.filter(
+        (msg) => msg.messageType === "text"
+      );
+      return userMessages[userMessages.length - 1];
+    }
+    const last = getLastMessage();
+    setLastMessage(last);
+  }, [conversation, item, lastMessage]);
+
   function formatTime(time) {
     const options = { hour: "numeric", minute: "numeric" };
     return new Date(time).toLocaleString("en-US", options);
