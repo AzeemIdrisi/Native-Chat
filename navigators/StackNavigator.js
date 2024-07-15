@@ -7,6 +7,7 @@ import RegisterScreen from "../screens/RegisterScreen";
 import HomeScreen from "../screens/HomeScreen";
 import FriendsScreen from "../screens/FriendsScreen";
 import ChatScreen from "../screens/ChatScreen";
+import DirectMessageScreen from "../screens/DirectMessageScreen";
 
 const Stack = createNativeStackNavigator();
 
@@ -29,8 +30,21 @@ const StackNavigator = () => {
           }}
         />
         <Stack.Screen name="HomeScreen" component={HomeScreen} />
-        <Stack.Screen name="FriendsScreen" component={FriendsScreen} />
-        <Stack.Screen name="ChatScreen" component={ChatScreen} />
+        <Stack.Screen
+          name="FriendsScreen"
+          component={FriendsScreen}
+          options={{ title: "Friend Requests" }}
+        />
+        <Stack.Screen
+          name="ChatScreen"
+          component={ChatScreen}
+          options={{ title: "Chats" }}
+        />
+        <Stack.Screen
+          name="DMScreen"
+          component={DirectMessageScreen}
+          options={{ title: "DM USER" }}
+        />
       </Stack.Navigator>
     </NavigationContainer>
   );

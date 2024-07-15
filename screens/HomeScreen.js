@@ -20,7 +20,12 @@ const HomeScreen = ({ navigation }) => {
       ),
       headerRight: () => (
         <View style={{ flexDirection: "row", alignItems: "center", gap: 10 }}>
-          <Ionicons name="chatbox-ellipses-outline" size={24} color="black" />
+          <Ionicons
+            name="chatbox-ellipses-outline"
+            size={24}
+            color="black"
+            onPress={() => navigation.navigate("ChatScreen")}
+          />
           <Ionicons
             name="people-outline"
             size={24}
@@ -42,7 +47,7 @@ const HomeScreen = ({ navigation }) => {
         const id = decodedToken.userID;
         setUserId(id); // Update the context with the userID
 
-        const response = await axios.get("http://192.168.1.2:8000/users/" + id);
+        const response = await axios.get("http://192.168.1.7:8000/users/" + id);
 
         setUsers(response.data?.users);
         // Update the local state with users data

@@ -215,3 +215,20 @@ async function reset() {
   });
 }
 // reset();
+
+// Get all friends of the logged in user
+app.get("/all-friends/:userID", async (req, res) => {
+  try {
+    const { userID } = req.params;
+    const user = await User.findById(userID).populate(
+      "friends",
+      "name email image"
+    );
+    const allFriends = user.friends;
+
+    return res.status(200).json({ allFriends, success: true });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({ message: "Some error", success: false });
+  }
+});

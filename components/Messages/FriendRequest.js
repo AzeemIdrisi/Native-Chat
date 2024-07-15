@@ -2,14 +2,15 @@ import { Pressable, Image, View, Text } from "react-native";
 import React, { useContext } from "react";
 import { UserContext } from "../../store/UserContext";
 import axios from "axios";
+import { useNavigation } from "@react-navigation/native";
 
 const FriendRequest = ({ item, friendRequests, sentFriendRequests }) => {
   const { userID, setUserId } = useContext(UserContext);
-
+  const navigation = useNavigation();
   async function acceptRequest(id) {
     try {
       const response = await axios.post(
-        "http://192.168.1.2:8000/friend-request/accept",
+        "http://192.168.1.7:8000/friend-request/accept",
         {
           currentUserID: userID,
           selectedUserID: id,
@@ -18,6 +19,7 @@ const FriendRequest = ({ item, friendRequests, sentFriendRequests }) => {
       if (response.data.success) {
         console.log(response.data.message);
         sentFriendRequests(friendRequests.filter((item) => item._id !== id));
+        navigation.navigate("ChatScreen");
       }
     } catch (error) {
       console.log(error);

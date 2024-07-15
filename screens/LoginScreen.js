@@ -13,15 +13,15 @@ import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const LoginScreen = ({ navigation }) => {
-  useEffect(() => {
-    async function checkToken() {
-      const token = await AsyncStorage.getItem("authToken");
-      if (token) {
-        navigation.replace("HomeScreen");
-      }
-    }
-    checkToken();
-  }, []);
+  // useEffect(() => {
+  //   async function checkToken() {
+  //     const token = await AsyncStorage.getItem("authToken");
+  //     if (token) {
+  //       navigation.replace("HomeScreen");
+  //     }
+  //   }
+  //   checkToken();
+  // }, []);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
@@ -31,7 +31,7 @@ const LoginScreen = ({ navigation }) => {
       password: password,
     };
     axios
-      .post("http://192.168.1.2:8000/login", user)
+      .post("http://192.168.1.7:8000/login", user)
       .then((response) => {
         const token = response.data.token;
 
@@ -56,7 +56,7 @@ const LoginScreen = ({ navigation }) => {
         alignItems: "center",
       }}
     >
-      <KeyboardAvoidingView>
+      <KeyboardAvoidingView behavior="position">
         <View
           style={{
             marginTop: 100,
