@@ -8,6 +8,7 @@ const localStrategy = require("passport-local").Strategy;
 const cors = require("cors");
 const jwt = require("jsonwebtoken");
 const dotenv = require("dotenv");
+const multer = require("multer");
 
 // Initializing App
 const app = express();
@@ -120,10 +121,10 @@ app.post("/login", (req, res) => {
 });
 
 //Get other users
-app.get("/users/:userID", (req, res) => {
+app.get("/users/:userID", async (req, res) => {
   const loggedInUserID = req.params.userID;
 
-  User.find({ _id: { $ne: loggedInUserID } })
+  await User.find({ _id: { $ne: loggedInUserID } })
     .then((users) => {
       res.status(200).json({ users });
     })
@@ -227,6 +228,108 @@ app.get("/all-friends/:userID", async (req, res) => {
     const allFriends = user.friends;
 
     return res.status(200).json({ allFriends, success: true });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({ message: "Some error", success: false });
+  }
+});
+
+// Post messages
+// Image upload facility : Multer
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, "files/");
+  },
+  filename: (req, file, cb) => {
+    const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
+    cb(null, uniqueSuffix + "-" + file.originalname);
+  },
+});
+
+const upload = multer({ storage: storage });
+app.post("/messages/", upload.single("imageFile"), async (req, res) => {
+  try {
+    const { senderID, receiverID, messageType, message } = req.body;
+
+    console.log(req.body);
+    const newMessage = new Message({
+      senderID,
+      receiverID,
+      messageType,
+      message,
+      timeStamp: new Date(),
+      imageURL: messageType === "image" ? req.file.path : null,
+    });
+    await newMessage.save();
+    return res.status(200).json({
+      success: true,
+      message: "Message sent",
+    });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({ message: "Some error", success: false });
+  }
+});
+
+// get user details for DM
+app.get("/user/:userID", async (req, res) => {
+  try {
+    const userID = req.params.userID;
+
+    const user = await User.findById(userID);
+
+    return res.status(200).json({
+      success: true,
+      user: user,
+    });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({ message: "Some error", success: false });
+  }
+});
+
+// get conversation
+
+app.get("/messages/:senderID/:receiverID", async (req, res) => {
+  try {
+    const senderID = req.params.senderID;
+    const receiverID = req.params.receiverID;
+
+    const messages = await Message.find({
+      $or: [
+        {
+          senderID: senderID,
+          receiverID: receiverID,
+        },
+        {
+          senderID: receiverID,
+          receiverID: senderID,
+        },
+      ],
+    }).populate("senderID", "_id name");
+
+    return res.status(200).json({
+      success: true,
+      messages: messages,
+    });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({ message: "Some error", success: false });
+  }
+});
+
+// get user's friend requests
+app.get("/sent-requests/:userID", async (req, res) => {
+  try {
+    const { userID } = req.params;
+    const sentRequests = await User.findById(userID).populate(
+      "sentFriendRequests",
+      "_id name"
+    );
+    return res.status(200).json({
+      success: true,
+      sentRequests: sentRequests.sentFriendRequests,
+    });
   } catch (error) {
     console.log(error);
     return res.status(500).json({ message: "Some error", success: false });

@@ -1,11 +1,46 @@
 import { View, Text, Pressable, Image } from "react-native";
-import React, { useContext, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { UserContext } from "../../store/UserContext";
 import axios from "axios";
 
 const UserItem = ({ item }) => {
   const { userID, setUserId } = useContext(UserContext);
   const [requestSent, setRequestSent] = useState(false);
+  const [friendRequests, setFriendRequests] = useState([]);
+  const [userFriends, setUserFriends] = useState([]);
+
+  useEffect(() => {
+    async function fetchUserFriends() {
+      try {
+        const response = await axios.get(
+          "http://192.168.1.7:8000/all-friends/" + userID
+        );
+        if (response.data.success) {
+          setUserFriends(response.data.allFriends);
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    }
+    fetchUserFriends();
+  }, []);
+
+  useEffect(() => {
+    async function fetchFriendRequests() {
+      try {
+        const response = await axios.get(
+          "http://192.168.1.7:8000/sent-requests/" + userID
+        );
+        if (response.data.success) {
+          setFriendRequests(response.data.sentRequests);
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    }
+    fetchFriendRequests();
+  }, []);
+
   async function sendFriendRequest(currentUserID, selectedUserID) {
     try {
       const response = await axios.post(
@@ -24,6 +59,7 @@ const UserItem = ({ item }) => {
       console.log(error);
     }
   }
+
   return (
     <Pressable
       style={{ flexDirection: "row", alignItems: "center", marginVertical: 10 }}
@@ -43,21 +79,47 @@ const UserItem = ({ item }) => {
         <Text style={{ fontWeight: "bold" }}>{item?.name}</Text>
         <Text style={{ marginTop: 4, color: "gray" }}>{item?.email}</Text>
       </View>
-      <Pressable
-        onPress={() => sendFriendRequest(userID, item?._id)}
-        style={{
-          backgroundColor: "#0091ff",
-          padding: 10,
-          borderRadius: 6,
-          width: 100,
-          justifyContent: "center",
-          alignItems: "center",
-        }}
-      >
-        <Text style={{ color: "white", fontSize: 14, fontWeight: "semibold" }}>
-          {requestSent ? " Sent" : " Add Friend"}
-        </Text>
-      </Pressable>
+      {userFriends && userFriends.some((friend) => friend._id === item._id) ? (
+        <Pressable
+          style={{
+            backgroundColor: "#1fb54f",
+            padding: 10,
+            width: 120,
+            borderRadius: 6,
+          }}
+        >
+          <Text style={{ textAlign: "center", color: "white" }}>Friends</Text>
+        </Pressable>
+      ) : requestSent ||
+        (friendRequests.length > 0 &&
+          friendRequests.some((friend) => friend._id === item._id)) ? (
+        <Pressable
+          style={{
+            backgroundColor: "gray",
+            padding: 10,
+            width: 120,
+            borderRadius: 6,
+          }}
+        >
+          <Text style={{ textAlign: "center", color: "white", fontSize: 13 }}>
+            Request Sent
+          </Text>
+        </Pressable>
+      ) : (
+        <Pressable
+          onPress={() => sendFriendRequest(userID, item._id)}
+          style={{
+            backgroundColor: "#567189",
+            padding: 10,
+            borderRadius: 6,
+            width: 120,
+          }}
+        >
+          <Text style={{ textAlign: "center", color: "white", fontSize: 13 }}>
+            Add Friend
+          </Text>
+        </Pressable>
+      )}
     </Pressable>
   );
 };

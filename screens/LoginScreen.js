@@ -13,15 +13,15 @@ import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const LoginScreen = ({ navigation }) => {
-  // useEffect(() => {
-  //   async function checkToken() {
-  //     const token = await AsyncStorage.getItem("authToken");
-  //     if (token) {
-  //       navigation.replace("HomeScreen");
-  //     }
-  //   }
-  //   checkToken();
-  // }, []);
+  useEffect(() => {
+    async function checkToken() {
+      const token = await AsyncStorage.getItem("authToken");
+      if (token) {
+        navigation.replace("HomeScreen");
+      }
+    }
+    checkToken();
+  }, []);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 

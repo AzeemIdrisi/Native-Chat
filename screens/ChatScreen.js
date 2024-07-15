@@ -7,6 +7,7 @@ import ChatUser from "../components/Messages/ChatUser";
 const ChatScreen = ({ navigation }) => {
   const { userID, setUserId } = useContext(UserContext);
   const [allFriends, setAllFriends] = useState([]);
+
   useEffect(() => {
     async function acceptedFriends() {
       try {

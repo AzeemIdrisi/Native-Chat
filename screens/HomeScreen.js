@@ -19,7 +19,7 @@ const HomeScreen = ({ navigation }) => {
         <Text style={{ fontSize: 20, fontWeight: "bold" }}>Native Chat</Text>
       ),
       headerRight: () => (
-        <View style={{ flexDirection: "row", alignItems: "center", gap: 10 }}>
+        <View style={{ flexDirection: "row", alignItems: "center", gap: 20 }}>
           <Ionicons
             name="chatbox-ellipses-outline"
             size={24}
