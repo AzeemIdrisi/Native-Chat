@@ -89,24 +89,23 @@ const DirectMessageScreen = ({ navigation, route }) => {
         </View>
       ),
     });
-  }, [receiverData]);
+  }, []);
+  async function fetchMessages() {
+    try {
+      const response = await axios.get(
+        `http://192.168.1.7:8000/messages/${userID}/${route.params.target}`
+      );
 
-  useEffect(() => {
-    async function fetchMessages() {
-      try {
-        const response = await axios.get(
-          `http://192.168.1.7:8000/messages/${userID}/${route.params.target}`
-        );
-
-        if (response.data.success) {
-          setConversation(response.data.messages);
-        }
-      } catch (error) {
-        console.log(error);
+      if (response.data.success) {
+        setConversation(response.data.messages);
       }
+    } catch (error) {
+      console.log(error);
     }
+  }
+  useEffect(() => {
     fetchMessages();
-  }, [handleSend, conversation]);
+  }, []);
   function handleEmojiPress() {
     setShowEmoji((prev) => !prev);
   }
@@ -137,6 +136,7 @@ const DirectMessageScreen = ({ navigation, route }) => {
       if (response.ok) {
         setMessage("");
         console.log("Message sent successfully");
+        fetchMessages();
       }
     } catch (error) {
       console.log("error in sending the message", error);
@@ -160,6 +160,7 @@ const DirectMessageScreen = ({ navigation, route }) => {
       textAlign: "left",
     };
     if (itemData.item.messageType === "image") {
+      console.log(itemData.item);
       // const baseUrl = "C:/Users/Azeem Idrisi/DesktopNative-Chat/api/files/";
       const imageUrl = itemData.item.imageURL;
 
@@ -169,7 +170,7 @@ const DirectMessageScreen = ({ navigation, route }) => {
         <View style={styles}>
           <Image
             style={{ width: 100, height: 100 }}
-            source={{ uri: `../api/files/${filename}` }}
+            source={{ uri: `http://192.168.1.7:8000/files/${filename}` }}
           />
         </View>
       );

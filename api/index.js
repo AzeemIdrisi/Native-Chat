@@ -251,7 +251,6 @@ app.post("/messages/", upload.single("imageFile"), async (req, res) => {
   try {
     const { senderID, receiverID, messageType, message } = req.body;
 
-    console.log(req.body);
     const newMessage = new Message({
       senderID,
       receiverID,
@@ -334,4 +333,15 @@ app.get("/sent-requests/:userID", async (req, res) => {
     console.log(error);
     return res.status(500).json({ message: "Some error", success: false });
   }
+});
+
+const path = require("path");
+app.use("/files", express.static(path.join(__dirname, "files")));
+app.get("/files", (req, res) => {
+  const imagePath = path.join(
+    __dirname,
+    "files",
+    "721055916441-781746627-image.jpg"
+  );
+  res.sendFile(imagePath);
 });
